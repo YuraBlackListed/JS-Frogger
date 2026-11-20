@@ -9,6 +9,7 @@ import { Player } from './Player.js';
 
 /** The game is always in exactly one of these states. */
 const State = Object.freeze({
+  TITLE:'title',
   PLAYING: 'playing',
   DYING: 'dying',       // splat is showing, traffic keeps moving
   PAUSED: 'paused',
@@ -32,7 +33,7 @@ export class Game {
    * @param {HTMLCanvasElement} canvas
    * @param {import('../engine/AssetLoader.js').AssetLoader} assets  Already loaded.
    */
-  constructor(canvas, assets) {
+  constructor(canvas, themes) {
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
     this.ctx = canvas.getContext('2d');
@@ -45,17 +46,33 @@ export class Game {
       render: () => this.render(),
     });
 
-    // Game objects
+    // Graphic themes: [{ name, assets }], chosen on the start screen
+    this.themes = themes;
+    this.themeIndex = 0;
+    this._buildWorld();
+
+    this.showDebug = false;
+    this.newGame();
+    this.state = State.TITLE;
+  }
+  /** Create the game objects using the images of the current theme. */
+  _buildWorld() {
+    const assets = this.themes[this.themeIndex].assets;
     this.background = new Background(assets);
     this.hud = new Hud(assets.getImage('frog'));
     this.player = new Player({ image: assets.getImage('frog'), input: this.input });
     this.lanes = LANES.map((definition) => new Lane(definition, assets));
     this.vehicles = this.lanes.flatMap((lane) => lane.vehicles); // flat list for collision checks
-
-    this.showDebug = false;
-    this.newGame();
   }
 
+  /** Switch to the previous (-1) or next (+1) theme and rebuild the world. */
+  _changeTheme(step) {
+    const count = this.themes.length;
+    this.themeIndex = (this.themeIndex + step + count) % count; // wraps around: last -> first
+    this._buildWorld();
+    this.newGame();
+    this.state = State.TITLE;
+  }
   start() {
     this.loop.start();
   }
@@ -99,6 +116,12 @@ export class Game {
     }
 
     switch (this.state) {
+      case State.TITLE:
+        for (const lane of this.lanes) lane.update(dt); // cars drive behind the title
+        if (this.input.wasPressed(...KEYS.left)) this._changeTheme(-1);
+        if (this.input.wasPressed(...KEYS.right)) this._changeTheme(1);
+        if (this.input.wasPressed(...KEYS.start)) this.state = State.PLAYING;
+        return;
       case State.PLAYING:
         return this._updatePlaying(dt);
       case State.DYING:
@@ -193,6 +216,14 @@ export class Game {
   }
 
   _overlay() {
+    if (this.state === State.TITLE) {
+      return {
+        title: 'FROGGER',
+        subtitle: 'Press Enter to start',
+        hint: 'Dodge the cars and help the frog reach the other side',
+        option: `Theme: ◄ ${this.themes[this.themeIndex].name} ►`,
+      };
+    }
     if (this.state === State.PAUSED) {
       return { title: 'PAUSED', subtitle: 'Press P to keep hopping' };
     }

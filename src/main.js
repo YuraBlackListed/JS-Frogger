@@ -3,16 +3,21 @@
  * Everything else lives in src/engine (reusable) and src/game (Frogger only).
  */
 import { AssetLoader } from './engine/AssetLoader.js';
-import { IMAGE_MANIFEST } from './game/assets.js';
+import { THEMES } from './game/assets.js';
 import { Game } from './game/Game.js';
 
 async function main() {
   const canvas = document.getElementById('game');
   const status = document.getElementById('status');
 
-  const assets = new AssetLoader();
+  // Load the images of every theme, each into its own AssetLoader.
+  const themes = [];
   try {
-    await assets.loadImages(IMAGE_MANIFEST);
+    for (const theme of THEMES) {
+      const assets = new AssetLoader();
+      await assets.loadImages(theme.manifest);
+      themes.push({ name: theme.name, assets });
+    }
   } catch (error) {
     console.error(error);
     status.textContent = error.message;
@@ -20,7 +25,7 @@ async function main() {
     return;
   }
 
-  const game = new Game(canvas, assets);
+  const game = new Game(canvas, themes);
   game.start();
   status.hidden = true;
 

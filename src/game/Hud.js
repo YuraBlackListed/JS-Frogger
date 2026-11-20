@@ -28,6 +28,9 @@ export class Hud {
   render(ctx, { score, lives, level, banner, overlay, fps }) {
     const barY = TILE_SIZE / 2; // the top bar sits on the hedge row
 
+    // Dark see-through strip behind the top bar, so the text stays readable on any background.
+    ctx.fillStyle = 'rgba(8, 16, 12, 0.4)';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, TILE_SIZE);
     this._text(ctx, `SCORE ${String(score).padStart(5, '0')}`, 14, barY, { size: 20 });
     this._text(ctx, `LEVEL ${level}`, CANVAS_WIDTH / 2, barY, { size: 20, align: 'center' });
 
@@ -50,6 +53,12 @@ export class Hud {
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       this._text(ctx, overlay.title, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 16, { size: 52, align: 'center' });
       this._text(ctx, overlay.subtitle, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 36, { size: 20, align: 'center' });
+      if (overlay.hint) {
+        this._text(ctx, overlay.hint, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 90, { size: 16, align: 'center', color: '#b9d6a6' });
+      }
+      if (overlay.option) {
+        this._text(ctx, overlay.option, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 130, { size: 20, align: 'center', color: '#ffd700' });
+      }
     }
   }
 

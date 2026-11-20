@@ -19,3 +19,15 @@ export const IMAGE_MANIFEST = {
   pavement: `${DIR}pavement.png`,
   hedge: `${DIR}hedge.png`,
 };
+
+/** Same names as IMAGE_MANIFEST, but the files come from assets/sprites/christmas/. */
+export const CHRISTMAS_MANIFEST = {};
+for (const [name, path] of Object.entries(IMAGE_MANIFEST)) {
+  CHRISTMAS_MANIFEST[name] = path.replace(DIR, `${DIR}christmas/`);
+}
+
+/** Graphic themes the player can choose on the start screen. */
+export const THEMES = [
+  { name: 'Classic', manifest: IMAGE_MANIFEST },
+  { name: 'Christmas', manifest: CHRISTMAS_MANIFEST },
+];

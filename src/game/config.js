@@ -34,6 +34,9 @@ export const KEYS = {
   pause: ['KeyP', 'Escape'],
   restart: ['Enter'],
   debug: ['KeyH'],
+  restart:['Enter'],
+  start: ['Enter', 'Space'],
+
 };
 
 // ---- Player ----------------------------------------------------------------
