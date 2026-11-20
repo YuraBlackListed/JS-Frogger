@@ -1,0 +1,10 @@
+{
+  "name": "frogger",
+  "version": "1.0.0",
+  "description": "Classic Frogger in vanilla JavaScript and HTML5 Canvas (engine + game architecture).",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve ."
+  }
+}

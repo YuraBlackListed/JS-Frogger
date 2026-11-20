@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frogger</title>
+  <style>
+    :root {
+      --bg: #14231b;
+      --frame: #2a4a38;
+      --ink: #d7e8cc;
+      --muted: #8fae9a;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.5 "Courier New", Courier, monospace;
+    }
+    main { width: min(100%, 656px); padding: 16px; text-align: center; }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 4px solid var(--frame);
+      border-radius: 6px;
+      image-rendering: pixelated; /* keep pixel art sharp if the browser scales the canvas */
+      background: #000;
+    }
+    #status { margin: 12px 0 0; padding: 10px 12px; border: 1px solid #b4533c; color: #ffd9cf; text-align: left; }
+    .help { margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+    kbd { padding: 0 5px; border: 1px solid var(--frame); border-radius: 3px; color: var(--ink); }
+  </style>
+</head>
+<body>
+  <main>
+    <canvas id="game" width="624" height="528" aria-label="Frogger game board"></canvas>
+    <p id="status" role="alert" hidden></p>
+    <p class="help">
+      Hop with <kbd>&uarr;</kbd><kbd>&larr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>.
+      <kbd>P</kbd> pauses, <kbd>H</kbd> shows hitboxes.
+    </p>
+  </main>
+
+  <!-- ES modules are blocked on file:// URLs, so explain that instead of showing a blank page. -->
+  <script>
+    if (location.protocol === 'file:') {
+      var s = document.getElementById('status');
+      s.hidden = false;
+      s.textContent = 'This page must be served over http. From the project folder run: python3 -m http.server 8000, then open http://localhost:8000';
+    }
+  </script>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
