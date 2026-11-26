@@ -6,6 +6,7 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH, GOAL_ROW, KEYS, LANES, RULES } from './con
 import { Hud } from './Hud.js';
 import { Lane } from './Lane.js';
 import { Player } from './Player.js';
+import { Music } from './Music.js';
 
 /** The game is always in exactly one of these states. */
 const State = Object.freeze({
@@ -49,6 +50,12 @@ export class Game {
     // Graphic themes: [{ name, assets }], chosen on the start screen
     this.themes = themes;
     this.themeIndex = 0;
+    this.music = new Music();
+
+
+    window.addEventListener('keydown', () => {
+      this.music.play(this.themes[this.themeIndex].name);
+    }, { once: true });
     this._buildWorld();
 
     this.showDebug = false;
@@ -72,6 +79,7 @@ export class Game {
     this._buildWorld();
     this.newGame();
     this.state = State.TITLE;
+    this.music.play(this.themes[this.themeIndex].name);
   }
   start() {
     this.loop.start();
@@ -130,6 +138,10 @@ export class Game {
         if (this.input.wasPressed(...KEYS.pause)) this.state = State.PLAYING;
         return;
       case State.GAME_OVER:
+        if (this.input.wasPressed(...KEYS.restart)) {
+          this.music.stopGameOver();
+          this.music.play(this.themes[this.themeIndex].name);
+        }
         if (this.input.wasPressed(...KEYS.restart)) this.newGame();
         return;
     }
@@ -173,11 +185,13 @@ export class Game {
       this.state = State.PLAYING;
     } else {
       this.state = State.GAME_OVER;
+      this.music.playGameOver();
     }
   }
 
   _killPlayer() {
     this.player.die();
+    this.music.playSplat();
     this.lives -= 1;
     this.deathTimer = RULES.deathPauseSeconds;
     this.state = State.DYING;
