@@ -1,6 +1,7 @@
 import { GameObject } from '../engine/GameObject.js';
 import { Sprite } from '../engine/Sprite.js';
 import { COLS, GOAL_ROW, KEYS, PLAYER, START_ROW, TILE_SIZE } from './config.js';
+import { SoundEffects } from './SoundEffects.js';
 
 // Frame numbers inside the frog sprite strip (frog.png).
 const FRAME = { IDLE: 0, HOP: 1, DEAD: 2 };
@@ -42,6 +43,7 @@ export class Player extends GameObject {
       sprite: new Sprite(image, { frameWidth: image.height, frameHeight: image.height }),
     });
     this.input = input;
+    this.soundEffects = new SoundEffects();
     this.reset();
   }
 
@@ -110,6 +112,7 @@ export class Player extends GameObject {
 
     this._hop = { fromX: this.x, fromY: this.y, toCol, toRow, elapsed: 0 };
     this.sprite.setFrame(FRAME.HOP);
+    this.soundEffects.playJump();
   }
 
   _advanceHop(dt) {
